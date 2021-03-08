@@ -3,6 +3,82 @@ ID: com.sap.openSAP.hana5.example
 version: 1.12.1
 
 modules:
+ - name: openSAP5-ex-core-db
+   type: hdb
+   path: core-db
+   requires:
+    - name: container
+      properties:
+        TARGET_CONTAINER: ~{container-name}
+        
+    - name: CrossSchemaService
+      group: SERVICE_REPLACEMENTS
+      properties:
+        key: hdi-sflight-service
+        service: ~{sflight-service-name}  
+        
+    - name: CrossSchemaSys
+      group: SERVICE_REPLACEMENTS
+      properties:
+        key: hdi-sys-service
+        service: ~{sys-service-name}   
+        
+    - name: CrossSchemaSysBi
+      group: SERVICE_REPLACEMENTS
+      properties:
+        key: hdi-sys-bi-service
+        service: ~{sys-bi-service-name}   
+        
+    - name: user-container
+      group: SERVICE_REPLACEMENTS
+      properties:
+        key: hdi-user-service
+        service: ~{user-container-name}  
+        
+ - name: openSAP5-ex-user-db
+   type: hdb
+   path: user-db
+   requires:
+    - name: user-container
+      properties:
+        TARGET_CONTAINER: ~{user-container-name}
+
+ - name: openSAP5-ex-web
+   type: html5 
+   path: web
+   provides: 
+      - name: web
+        properties:
+          ui-url: "${default-url}"
+   parameters: 
+       host: web 
+       register-service-url: true 
+       service-name: web 
+       service-url: "${default-url}"          
+   requires:
+      - name: openSAP5-ex-uaa
+      - name: ui5-lib
+        properties:
+          ui5liburl: ~{url}      
+    #  - name: EXTERNAL_UI5
+    #    properties:
+    #      ui5liburl: ~{url}
+    #  - name: XSC_UI5
+    #    properties:
+    #      ui5liburl: ~{url}     
+      - name: core-js
+        group: destinations
+        properties:
+          name: core-backend
+          url: ~{url}
+          forwardAuthToken: true   
+      - name: user-js
+        group: destinations
+        properties:
+          name: user-backend
+          url: ~{url}
+          forwardAuthToken: true  
+
  - name: openSAP5-ex-core-js
    type: nodejs
    path: core-js
@@ -31,18 +107,18 @@ modules:
       - name: openSAP5-ex-scheduler
 
 
- - name: openSAP5-ex-user-java
-   type: java.tomee
-   path: user-java/target/user-java-1.1.13.war
-   provides: 
-     - name: user-java
-       properties:
-         url: "${default-url}"
-   requires:
-     - name: openSAP5-ex-uaa
-     - name: openSAP5-ex-scheduler
-     - name: openSAP5-ex-user-db
-     - name: suser-container
+# - name: openSAP5-ex-user-java
+#   type: java.tomee
+#   path: user-java/target/user-java-1.1.13.war
+#   provides: 
+#     - name: user-java
+#       properties:
+#         url: "${default-url}"
+#   requires:
+#     - name: openSAP5-ex-uaa
+#     - name: openSAP5-ex-scheduler
+#     - name: openSAP5-ex-user-db
+#     - name: suser-container
       
 resources:
  - name: container
@@ -126,5 +202,3 @@ resources:
    properties:
      xsc-ui5-service-name: ${service-name}
      url: ${url}
-     
-     
