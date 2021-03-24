@@ -43,41 +43,6 @@ modules:
       properties:
         TARGET_CONTAINER: ~{user-container-name}
 
- - name: openSAP5-ex-web
-   type: html5 
-   path: web
-   provides: 
-      - name: web
-        properties:
-          ui-url: "${default-url}"
-   parameters: 
-       host: web 
-       register-service-url: true 
-       service-name: web 
-       service-url: "${default-url}"          
-   requires:
-      - name: openSAP5-ex-uaa
-      - name: ui5-lib
-        properties:
-          ui5liburl: ~{url}      
-    #  - name: EXTERNAL_UI5
-    #    properties:
-    #      ui5liburl: ~{url}
-    #  - name: XSC_UI5
-    #    properties:
-    #      ui5liburl: ~{url}     
-      - name: core-js
-        group: destinations
-        properties:
-          name: core-backend
-          url: ~{url}
-          forwardAuthToken: true   
-      - name: user-js
-        group: destinations
-        properties:
-          name: user-backend
-          url: ~{url}
-          forwardAuthToken: true  
 
  - name: openSAP5-ex-core-js
    type: nodejs
